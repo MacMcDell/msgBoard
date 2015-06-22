@@ -1,0 +1,11 @@
+﻿<div class="modal-header">
+    <h3>Title: {{topic.title}} - {{topic.id}} / {{$index}} {{idx}}</h3>
+</div>
+<div class="modal-body">
+    Body<br />
+    {{topic.body}}{{topic.created | date:"medium"}}
+</div>
+<div class="modal-footer">
+    <a class="btn btn-primary" ng-click="cancel()">Cancel</a>
+    <a class="btn btn-danger" ng-click="delete(topic.id,idx)">Confirm Delete</a>
+</div>

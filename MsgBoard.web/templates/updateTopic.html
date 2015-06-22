@@ -1,0 +1,18 @@
+﻿<a href="#/" class="btn">
+    Back
+    </a>
+
+     <h3>Update Topic</h3>
+    <form name="updateTopicForm" novalidate data-ng-submit="updateTopic()">
+        <fieldset>
+            <div>
+                <label for="body">Body</label>
+                <textarea name="body" rows="5" cols="30" data-ng-model="topic.body" required data-ng-minlength="15" />
+                <span class="error" data-ng-show="updateTopicForm.body.$error.required">*</span>
+                <span class="error" data-ng-show="updateTopicForm.body.$error.minlength">Minimum 15 Characters</span>
+            </div>
+            <div>
+                <input type="submit" class="btn" value="Save" data-ng-disabled="updateTopicForm.$invalid" />
+            </div>
+        </fieldset>
+    </form>

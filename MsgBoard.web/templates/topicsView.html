@@ -1,0 +1,87 @@
+﻿<!--<script>
+        $(function () {
+            $(".openDialog").button().on("click", function () {
+                $("#dialog-confirm").dialog("open");
+            });
+
+            $("#dialog-confirm").dialog({
+                autoOpen: false,
+                resizable: false,
+                height: 140,
+                modal: true,
+                buttons: {
+                    "Delete all items": function () {
+                        $(this).dialog("close");
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+</script>
+
+<input type="button" class="openDialog" value="open me" />
+
+<div id="dialog-confirm" title="Empty the recycle bin?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>-->
+
+<div>
+    <div class="message-header">
+        <h1>Message board</h1>
+        <p class="lead">Latest Messages....</p>
+        <div>Message Count: {{data.topics.length}}</div>
+    </div>
+    <div>
+        <a href="#/newMessage"> Add new message</a>
+        <a class="btn btn-primary" ng-click="insert()">Add new Topic</a>
+    </div>
+
+    <div class="progress progress-striped active" ng-show="isBusy">
+        <div class="bar" style="width:100%">
+        </div>
+    </div>
+    <div class="messages">
+        <div class="message row" ng-repeat="topic in data.topics">
+            <div class="title span10">{{topic.title}} <a ng-click="updateTopic(topic, $index)">update</a> <br />
+                {{topic.id}}/{{$index}}
+            </div>
+            <div class="date span2">{{topic.created | date:"medium"}}</div>
+            <div class="contents span12">{{topic.body}}</div>
+            <div class="replies span12">
+                <div class="reply " ng-repeat="reply in topic.replies">
+                    <div class="created pull-right">
+                        {{reply.created | date:"medium"}}
+                    </div>
+                    <div class="content">
+                        {{reply.body}}
+                    </div>
+                </div>
+            </div>
+            <div class="toolbar span12">
+                <a class="btn btn-primary" ng-href="#/message/{{topic.id}}">Reply</a>
+                <a class="btn btn-primary" ng-click="reply(topic,$index)">Reply inline</a>
+
+                <button class="btn btn-danger" ng-click="delete(topic,$index)">Delete</button> <br />
+            </div>
+
+            <!--MODAL WINDOW-->
+            <!--<script type="text/ng-template" id="myModalContent.html">
+                <div class="modal-header">
+                    <h3>Title: {{topic.title}} - {{topic.id}} / {{$index}} {{idx}}</h3>
+                </div>
+                <div class="modal-body">
+                    Body<br />
+                    {{topic.body}}{{topic.created | date:"medium"}}
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary" ng-click="cancel()">Cancel</a>
+                    <a class="btn btn-danger" ng-click="delete(topic.id,idx)">Confirm Delete</a>
+                </div>
+            </script>-->
+
+
+        </div>
+    </div>
+</div>
