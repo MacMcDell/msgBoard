@@ -12,16 +12,19 @@ namespace MsgBoard.web.Controllers
     {
         private IMessageBoardRepository _repo;
 
+        //api/replies
         public RepliesController(IMessageBoardRepository repo)
         {
             _repo = repo;
         }
 
+        //api/Replies/1
         public IEnumerable<Reply> Get(int topicId)
         {
             return _repo.GetRepliesByTopic(topicId);
         }
 
+        //api/replies
         public HttpResponseMessage Post([FromBody] Reply newReply,int topicId)
         {
             if (newReply.Created == default(DateTime))

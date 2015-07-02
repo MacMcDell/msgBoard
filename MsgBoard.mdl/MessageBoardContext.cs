@@ -22,5 +22,7 @@ namespace MsgBoard.mdl
 
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Reply> Replies { get; set; }
+
+        public DbSet<TopicReview> Reviews { get; set; }
     }
 }

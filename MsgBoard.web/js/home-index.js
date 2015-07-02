@@ -1,5 +1,7 @@
-﻿/// <reference path="E:\Projects\PSight2\MsgBoard.web\templates/newTopicView.html" />
+﻿
 var homeIndexModule = angular.module("homeIndex", ['ngRoute', 'ui.bootstrap']);
+   
+    
 
 
 homeIndexModule.config(["$routeProvider", function ($routeProvider) {
@@ -151,18 +153,18 @@ homeIndexModule.factory("dataService", ["$http", "$q", function ($http, $q) {
 
     var updateTopic = function (topic) {
         var deferred = $q.defer();
-       // topic.body = topic.newBody;
+        // topic.body = topic.newBody;
         $http.put("/api/topics/" + topic.id, topic)
         .then(function (result) {
             var t = findTopic(topic.id);
             t.body = topic.body;
             t.title = topic.title;
-             deferred.resolve();
+            deferred.resolve();
         },
         function () {
-            deferred.reject; 
+            deferred.reject;
         });
-        return deferred.promise; 
+        return deferred.promise;
     };
 
     return {
@@ -177,7 +179,6 @@ homeIndexModule.factory("dataService", ["$http", "$q", function ($http, $q) {
     };
 
 }]);
-
 
 homeIndexModule.controller("topicsController", ["$modal", "$scope", "$http", "dataService", function ($modal, $scope, $http, dataService) {
     $scope.data = dataService;
@@ -233,8 +234,7 @@ homeIndexModule.controller("topicsController", ["$modal", "$scope", "$http", "da
     };
 
     //updateTopic
-    $scope.updateTopic = function (topic, idx)
-    {
+    $scope.updateTopic = function (topic, idx) {
         var modalInstance = $modal.open({
             controller: "updateTopicControllerInline",
             templateUrl: '/templates/updateTopicInline.html',
@@ -245,7 +245,7 @@ homeIndexModule.controller("topicsController", ["$modal", "$scope", "$http", "da
                 idx: function () {
                     return idx;
                 }
-               
+
             }
         });
     };
@@ -255,11 +255,11 @@ homeIndexModule.controller("topicsController", ["$modal", "$scope", "$http", "da
         var modalInstance = $modal.open({
             controller: "newTopicControllerInline",
             templateUrl: "/templates/newTopicView.html"
-            }
+        }
         )
     };
 
-    
+
 
 
 }]);
@@ -280,12 +280,16 @@ homeIndexModule.controller("newTopicController", ["$scope", "$http", "$window", 
 }]);
 
 homeIndexModule.controller("singleTopicController", ["$scope", "dataService", "$window", "$routeParams", function ($scope, dataService, $window, $routeParams) {
+    
+    $scope.topics = dataService.getTopics();
     $scope.topic = null;
     $scope.newReply = {};
+    $scope.topicIdSubscribed;
     dataService.getTopicById($routeParams.id)
         .then(function (topic) {
             //success
             $scope.topic = topic;
+           
         },
             function () {
                 //error
@@ -301,9 +305,8 @@ homeIndexModule.controller("singleTopicController", ["$scope", "dataService", "$
                 //error
                 alert("could not save");
             });
-
     };
-
+     
 }]);
 
 homeIndexModule.controller("updateTopicController", ["$scope", "dataService", "$window", "$routeParams", function ($scope, dataService, $window, $routeParams) {
@@ -323,8 +326,8 @@ homeIndexModule.controller("updateTopicController", ["$scope", "dataService", "$
         dataService.updateTopic($scope.topic)
             .then(function () {
                 //success
-             //   goHome();
-            //    $scope.topic.body = "done";
+                //   goHome();
+                //    $scope.topic.body = "done";
             }, function () {
                 //error
                 alert("could not save");
@@ -338,13 +341,13 @@ homeIndexModule.controller("updateTopicControllerInline", ["$modalInstance", "$s
     //$scope.something = {};
     $scope.topic = topic;
     $scope.idx = idx;
- //   $scope.something = $scope.topic;
- //   $scope.topic.newBody = $scope.topic.body;
+    //   $scope.something = $scope.topic;
+    //   $scope.topic.newBody = $scope.topic.body;
     $scope.updateTopic = function () {
-        dataService.updateTopic($scope.topic,idx)
+        dataService.updateTopic($scope.topic, idx)
             .then(function () {
                 //success
-              
+
                 $modalInstance.close();
             }, function () {
                 //error
@@ -386,7 +389,7 @@ homeIndexModule.controller("singleTopicControllerInline", ["$modalInstance", "$s
 
 }]);
 
-homeIndexModule.controller("newTopicControllerInline", ["$modalInstance","$scope", "$http", "$window", "dataService", function ($modalInstance,$scope, $http, $window, dataService) {
+homeIndexModule.controller("newTopicControllerInline", ["$modalInstance", "$scope", "$http", "$window", "dataService", function ($modalInstance, $scope, $http, $window, dataService) {
     $scope.newTopic = {};
     $scope.save = function () {
 
@@ -441,6 +444,6 @@ function goHome() {
 }
 
 function closeModal(instance) {
-   
-    instance.close(); 
+
+    instance.close();
 }

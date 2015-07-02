@@ -71,6 +71,7 @@ namespace MsgBoard.web.App_Start
         {
             kernel.Bind<MessageBoardContext>().To<MessageBoardContext>().InRequestScope();
             kernel.Bind<IMessageBoardRepository>().To<MessageBoardRepository>().InRequestScope();
+            kernel.Bind<IReviewRepo>().To<ReviewRepo>().InRequestScope();
         }
     }
 }

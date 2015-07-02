@@ -7,10 +7,11 @@ using System.Web.Http;
 using MsgBoard.mdl;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
+using MsgBoard.web.Hubs;
 
 namespace MsgBoard.web.Controllers
 {
-    public class TopicsController : ApiController
+    public class TopicsController : ApiControllerWithHub<MyHub>
     {
         private IMessageBoardRepository _repo;
 
@@ -18,12 +19,16 @@ namespace MsgBoard.web.Controllers
         {
             _repo = repo;
         }
+
+        [ResponseType(typeof(Topic))]
         public IEnumerable<Topic> Get(bool includeReplies = false)
         {
             IQueryable<Topic> results = includeReplies ? _repo.GetTopicsIncludingReplies() : _repo.GetTopics();
 
             return results
             .OrderByDescending(t => t.Created).Take(50);
+
+          
         }
 
         [HttpPost]

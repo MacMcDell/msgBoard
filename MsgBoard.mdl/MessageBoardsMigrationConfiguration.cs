@@ -23,7 +23,7 @@ namespace MsgBoard.mdl
                 {
                     Title = "Title 1",
                     Created = DateTime.Now,
-                    Body = "I am a body created at " + DateTime.Now.ToShortDateString() ,
+                    Body = "I am a body created at " + DateTime.Now.ToShortDateString(),
                     Replies = new List<Reply>()
                     {
                         new Reply()
@@ -45,6 +45,8 @@ namespace MsgBoard.mdl
                 };
                 context.Topics.Add(topic);
 
+
+
                 try
                 {
                     context.SaveChanges();
@@ -56,6 +58,19 @@ namespace MsgBoard.mdl
                 }
 
 #endif
+            }
+
+            if (!context.Reviews.Any())
+            {
+                var r = new List<TopicReview>()
+                {
+                    new TopicReview {sort = 1, review="xx" },
+                          new TopicReview {sort = 1, review="xx" },
+                                new TopicReview {sort = 1, review="xx" },
+                                      new TopicReview {sort = 1, review="xx" }
+                };
+                context.Reviews.AddRange(r);
+                context.SaveChanges();
             }
         }
     }

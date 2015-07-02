@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Reviews";
+    ViewBag.InitModule = "homeReview";
+}
+
+@section Scripts
+    {
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+    <script src="~/Scripts/ui-bootstrap-tpls.js"></script>
+    <script src="~/js/home-review.js"></script>
+}
+
+<h2>Reviews</h2>
+
+
+
+<div ng-view=""></div>
+
+

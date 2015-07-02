@@ -1,0 +1,46 @@
+﻿<h3>heool Reviews</h3>
+<div ng-cloak>
+
+    <div>
+        <h2>Search reivews</h2>
+        <input type="text" ng-model="customerId"
+               size="10" placeholder="Customer ID" />
+        <input type="button" value="Search"
+               ng-click="getAllFromCustomer();" />
+        <p ng-show="errorToSearch">{{errorToSearch}}</p>
+    </div>
+
+    <h2>Add complaint</h2>
+    <input type="text" ng-model="revToAdd"
+           size="40" placeholder="Description" />
+    <input type="button" value="Add" ng-click="postOne();" />
+    <p ng-show="errorToAdd">{{errorToAdd}}</p>
+
+
+       <div ng-show="toShow()">
+        <table>
+            <thead>
+            <th>Complaint id</th>
+            <th>Description</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="rvw in reviews ">
+                    <td>{{rvw.sort}}</td>
+                    <td>{{rvw.review}}</td>
+                    <td>
+                        <button ng-click="editIt
+                    (rvw)">
+                            Edit
+                        </button>
+                    </td>
+                    <td>
+                        <button ng-click="deleteOne
+                    (rvw)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

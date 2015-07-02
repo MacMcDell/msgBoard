@@ -1,0 +1,22 @@
+﻿@model MsgBoard.mdl.counter
+@{
+    ViewBag.Title = "Counts";
+}
+
+<h2>Counts</h2>
+
+current = @Html.ValueFor(m=> m.Count) 
+<br />
+
+<div>
+@using (Html.BeginForm("Counts", "Home", FormMethod.Post))
+{
+ 
+   
+    @Html.HiddenFor(Model => Model.Count)
+  
+
+   <input type="submit" name="submit" id="increment" value="increase" />
+   <input type="submit" name="submit" id="decrease" value="decrease" />
+    }
+</div>
