@@ -57,6 +57,12 @@ namespace MsgBoard.mdl
 
         }
 
-
+        public bool Update(TopicReview review)
+        {
+            var reviewToUpdate = _ctx.Reviews.Where(x => x.id == review.id).Single();
+            reviewToUpdate.review = review.review;
+            _ctx.Entry(reviewToUpdate).State = System.Data.Entity.EntityState.Modified;
+            return true; 
+        }
     }
 }

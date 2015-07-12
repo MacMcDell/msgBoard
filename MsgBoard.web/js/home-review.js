@@ -3,29 +3,11 @@ var homeReviewModule = angular.module("homeReview", ['ngRoute', 'ui.bootstrap'])
      , hub = $.connection.myHub;
 
 
-
-
-
 homeReviewModule.config(["$routeProvider", function ($routeProvider) {
     $routeProvider.when("/Home/Reviews", {
         controller: "reviewsController",
         templateUrl: "/templates/Reviews.html"
     });
-
-    //$routeProvider.when("/newMessage", {
-    //    controller: "newReviewController",
-    //    templateUrl: "/templates/newReviewView.html"
-    //});
-
-    //$routeProvider.when("/message/:id", {
-    //    controller: "singleReviewController",
-    //    templateUrl: "/templates/singleReviewView.html"
-    //});
-    //$routeProvider.when("/update/:id", {
-    //    controller: "updateReviewController",
-    //    templateUrl: "/templates/UpdateReview.html"
-    //});
-
     $routeProvider.otherwise({ redirectTo: "/Home/Reviews" });
 }]);
 
@@ -179,8 +161,7 @@ homeReviewModule.factory("dataService", ["$http", "$q", function ($http, $q) {
         $http.put("/api/reviews/" + review.id, review)
         .then(function (result) {
             var t = findReview(review.id);
-            t.body = review.body;
-            t.title = review.title;
+            t.review = review.review;
             deferred.resolve();
         },
         function () {
@@ -203,11 +184,14 @@ homeReviewModule.factory("dataService", ["$http", "$q", function ($http, $q) {
 
 }]);
 
-homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "dataService", function ($modal, $scope, $http, dataService) {
+homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "dataService", "$log", function ($modal, $scope, $http, dataService, $log) {
     $scope.reviews = [];
     $scope.data = dataService;
     $scope.sortIdSubscibed;
 
+    $scope.toShow = function () {
+        return $scope.reviews && $scope.reviews.length > 0;
+    };
 
     $scope.getAllFromCustomer = function () {
         dataService.getReviews($scope.customerId)
@@ -232,29 +216,6 @@ homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "
                 });
     };
     
-    //original
-    //    $scope.getAllFromCustomer = function () {
-    //        if ($scope.customerId.length == 0) return;
-    //       $http.get('/api/reviews/' + $scope.customerId)
-    //        .success(function (data, status) {
-    //            $scope.reviews = data; // show current reviews
-
-    //            if ($scope.sortIdSubscibed &&
-    //                $scope.sortIdSubscibed.length > 0 &&
-    //                $scope.sortIdSubscibed !== $scope.customerId) {
-    //                // unsubscribe to stop to get notifications for old customer
-    //                hub.server.unsubscribe($scope.sortIdSubscibed);
-    //            }
-    //            // subscribe to start to get notifications for new customer
-    //            hub.server.subscribe($scope.customerId);
-    //            $scope.sortIdSubscibed = $scope.customerId;
-    //        })
-    //        .error(function (data, status) {
-    //            $scope.reviews = [];
-    //            $scope.errorToSearch = errorMessage(data, status);
-    //        })
-    //};
-
     $scope.postOne = function () {
         $http.post("/api/reviews", {
             sort: $scope.customerId,
@@ -269,35 +230,42 @@ homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "
             })
     };
 
-
     $scope.deleteOne = function (item) {
         dataService.deleteItem(item)
         .then(function () {
             //success
-          //  $scope.reviews = dataService.reviews;
+            //  $scope.reviews = dataService.reviews;
         },
         function () {
             //error
         });
     };
 
+    $scope.editIt = function (item) {
+        $scope.idToUpdate = item.id;
+        $scope.descToUpdate = item.review;
 
-    //$scope.deleteOne = function (item) {
-    //    $http.delete('/api/reviews/' + item.id)
-    //        .success(function (data, status) {
-    //            $scope.errorToDelete = null;
-    //        })
-    //        .error(function (data, status) {
-    //            $scope.errorToDelete = errorMessage(data, status);
-    //        })
-    //};
-
-
-
-    $scope.toShow = function () {
-        return $scope.reviews && $scope.reviews.length > 0;
     };
 
+    $scope.putOne = function () {
+        var item = {
+            id: $scope.idToUpdate,
+            sort: $scope.customerId,
+            review: $scope.descToUpdate
+        }
+        dataService.updateReview(item)
+        .then(function () {
+            //sucess
+
+        },
+        function () {
+            console.log("put failed");
+
+            //faileure
+        });
+
+    }
+   
     // at initial page load
     $scope.orderProp = 'id';
 
@@ -306,6 +274,7 @@ homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "
         $scope.reviews.push(item);
         $scope.$apply(); // this is outside of angularjs, so need to apply
     }
+
     hub.client.deleteItem = function (item) {
         console.log("dleete item");
         var array = $scope.reviews;
@@ -316,7 +285,9 @@ homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "
             }
         }
     }
+
     hub.client.updateItem = function (item) {
+        $log.info("Item" + item.id + " updated.");
         var array = $scope.reviews;
         for (var i = array.length - 1; i >= 0; i--) {
             if (array[i].id === item.id) {
@@ -328,269 +299,9 @@ homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "
 
     $.connection.hub.start(); // connect to signalr hub
 
-
+    // end signalr client
 
 }]);
-
-
-//homeReviewModule.controller("reviewsController", ["$modal", "$scope", "$http", "dataService", function ($modal, $scope, $http, dataService) {
-//    console.log("in controller");
-//    $scope.data = dataService;
-//    $scope.isBusy = false;
-
-//    if (dataService.isReady() === false) {
-//        $scope.isBusy = true;
-//        dataService.getReviews()
-//            .then(function () {
-//                // success
-//            },
-//                function () {
-//                    // error
-//                    alert("could not load reviews.");
-//                })
-//            .then(function () {
-//                $scope.isBusy = false;
-//            });
-//    }
-
-//    ////MODAL windows
-//    ////reply 
-//    //$scope.reply = function (review, idx) {
-
-//    //    var modalInstance = $modal.open({
-//    //        controller: "singleReviewControllerInline",
-//    //        templateUrl: "/templates/singleReviewViewInline.html",
-//    //        resolve: {
-//    //            review: function () {
-//    //                return review;
-//    //            },
-//    //            idx: function () {
-//    //                return idx;
-//    //            }
-//    //        }
-//    //    });
-//    //};
-
-//    //// delete 
-//    //$scope.delete = function (review, idx) {
-//    //    var modalInstance = $modal.open({
-//    //        controller: "deleteControllerInline",
-//    //        templateUrl: '/templates/deleteContent.html',
-//    //        resolve: {
-//    //            review: function () {
-//    //                return review;
-//    //            },
-//    //            idx: function () {
-//    //                return idx;
-//    //            }
-//    //        }
-//    //    });
-//    //};
-
-//    ////updateReview
-//    //$scope.updateReview = function (review, idx) {
-//    //    var modalInstance = $modal.open({
-//    //        controller: "updateReviewControllerInline",
-//    //        templateUrl: '/templates/updateReviewInline.html',
-//    //        resolve: {
-//    //            review: function () {
-//    //                return angular.copy(review);
-//    //            },
-//    //            idx: function () {
-//    //                return idx;
-//    //            }
-
-//    //        }
-//    //    });
-//    //};
-
-//    ////Insert Review
-//    //$scope.insert = function () {
-//    //    var modalInstance = $modal.open({
-//    //        controller: "newReviewControllerInline",
-//    //        templateUrl: "/templates/newReviewView.html"
-//    //    }
-//    //    )
-//    //};
-
-
-
-
-//}]);
-
-//homeReviewModule.controller("newReviewController", ["$scope", "$http", "$window", "dataService", function ($scope, $http, $window, dataService) {
-//    $scope.newReview = {};
-//    $scope.save = function () {
-
-//        dataService.addReview($scope.newReview)
-//            .then(function () {
-//                //success
-//            },
-//                function () {
-//                    //error
-//                    alert("Review not saved.");
-//                });
-//    };
-//}]);
-
-//homeReviewModule.controller("singleReviewController", ["$scope", "dataService", "$window", "$routeParams", function ($scope, dataService, $window, $routeParams) {
-
-//    $scope.reviews = dataService.getReviews();
-//    $scope.review = null;
-//    $scope.newReply = {};
-//    $scope.reviewIdSubscribed;
-//    dataService.getReviewById($routeParams.id)
-//        .then(function (review) {
-//            //success
-//            $scope.review = review;
-
-//        },
-//            function () {
-//                //error
-//                goHome();
-//            });
-
-//    $scope.addReply = function () {
-//        dataService.saveReply($scope.review, $scope.newReply)
-//            .then(function () {
-//                //success
-//                $scope.newReply.body = "";
-//            }, function () {
-//                //error
-//                alert("could not save");
-//            });
-//    };
-
-//}]);
-
-//homeReviewModule.controller("updateReviewController", ["$scope", "dataService", "$window", "$routeParams", function ($scope, dataService, $window, $routeParams) {
-//    $scope.review = null;
-//    $scope.newReply = {};
-//    dataService.getReviewById($routeParams.id)
-//        .then(function (review) {
-//            //success
-//            $scope.review = review;
-//        },
-//            function () {
-//                //error
-//                goHome();
-//            });
-
-//    $scope.updateReview = function () {
-//        dataService.updateReview($scope.review)
-//            .then(function () {
-//                //success
-//                //   goHome();
-//                //    $scope.review.body = "done";
-//            }, function () {
-//                //error
-//                alert("could not save");
-//            });
-
-//    };
-
-//}]);
-
-//homeReviewModule.controller("updateReviewControllerInline", ["$modalInstance", "$scope", "dataService", "$window", "review", "idx", function ($modalInstance, $scope, dataService, $window, review, idx) {
-//    //$scope.something = {};
-//    $scope.review = review;
-//    $scope.idx = idx;
-//    //   $scope.something = $scope.review;
-//    //   $scope.review.newBody = $scope.review.body;
-//    $scope.updateReview = function () {
-//        dataService.updateReview($scope.review, idx)
-//            .then(function () {
-//                //success
-
-//                $modalInstance.close();
-//            }, function () {
-//                //error
-//                alert("could not save");
-//            });
-
-//    };
-
-//    $scope.cancel = function () {
-//        closeModal($modalInstance);
-
-//    };
-
-//}]);
-
-//homeReviewModule.controller("singleReviewControllerInline", ["$modalInstance", "$scope", "dataService", "$window", "review", "idx", function ($modalInstance, $scope, dataService, $window, review, idx) {
-//    $scope.review = review;
-//    $scope.idx = idx;
-//    $scope.newReply = {};
-
-
-//    $scope.addReply = function () {
-//        dataService.saveReply($scope.review, $scope.newReply)
-//            .then(function () {
-//                //success
-//                $scope.newReply.body = "";
-//                $modalInstance.close();
-//            }, function () {
-//                //error
-//                alert("could not save");
-//            });
-
-//    };
-
-//    $scope.cancel = function () {
-//        closeModal($modalInstance);
-
-//    };
-
-//}]);
-
-//homeReviewModule.controller("newReviewControllerInline", ["$modalInstance", "$scope", "$http", "$window", "dataService", function ($modalInstance, $scope, $http, $window, dataService) {
-//    $scope.newReview = {};
-//    $scope.save = function () {
-
-//        dataService.addReview($scope.newReview)
-//            .then(function () {
-//                //success
-//                closeModal($modalInstance);
-//            },
-//                function () {
-//                    //error
-//                    alert("Review not saved.");
-//                });
-//    };
-//    $scope.cancel = function () {
-//        closeModal($modalInstance);
-//    };
-//}]);
-
-//homeReviewModule.controller('deleteControllerInline', function ($scope, $modalInstance, $http, review, idx, dataService) {
-
-//    $scope.review = review;
-//    $scope.idx = idx;
-//    $scope.delete = function (id, idx) {
-
-//        dataService.deleteReview(id, idx)
-//              .then(function (review) {
-//                  //success  
-//                  //    $scope.review = review;
-//                  $modalInstance.close({
-//                      controller: "ModalInstanceCtrl"
-//                  });
-
-//              },
-//            function () {
-//                //error
-//                alert("could not delete.");
-//            });
-
-//    };
-
-//    $scope.cancel = function () {
-//        closeModal($modalInstance);
-
-//    };
-//});
-
-
 
 //helpers
 function goHome() {

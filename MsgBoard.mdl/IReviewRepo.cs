@@ -12,7 +12,8 @@ namespace MsgBoard.mdl
         IQueryable<TopicReview> GetReviewsBySortId(int id); 
          bool PostReview(TopicReview review);
         bool DeleteReview(int id);
-        bool Save(); 
+        bool Save();
+        bool Update(TopicReview review); 
 
     }
 }

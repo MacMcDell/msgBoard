@@ -17,16 +17,22 @@
     <p ng-show="errorToAdd">{{errorToAdd}}</p>
 
 
-       <div ng-show="toShow()">
+    <div ng-show="toShow()">
         <table>
             <thead>
-            <th>Complaint id</th>
-            <th>Description</th>
+                <tr>
+                    <th>Complaint id</th>
+                    <th>Description</th>
+                    <th>edit</th>
+                    <th>delete</th>
+                </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="rvw in reviews ">
                     <td>{{rvw.sort}}</td>
-                    <td>{{rvw.review}}</td>
+                    <td>{{rvw.review}}
+                    <!--<input type="text" ng-model="rvw.review" />-->
+                    </td>
                     <td>
                         <button ng-click="editIt
                     (rvw)">
@@ -42,5 +48,14 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div>
+        <h2>Edit review</h2>
+        <p>review id: {{idToUpdate}}</p>
+        <input type="text" ng-model="descToUpdate" size="40" placeholder="Description" />
+        <input type="button" value="Save" ng-click="putOne();" />
+        <p ng-show="errorToUpdate">{{errorToAdd}}</p>
+
     </div>
 </div>

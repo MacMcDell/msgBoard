@@ -71,5 +71,23 @@ namespace MsgBoard.web.Controllers
 
         }
 
+        [HttpPut]
+        public HttpResponseMessage UpdateReview([FromBody] TopicReview topicReview)
+        {
+        
+            if (_repo.Update(topicReview) && _repo.Save())
+
+            {
+                var subscribed = Hub.Clients.Group(topicReview.sort.ToString());
+                subscribed.updateItem(topicReview);
+                return Request.CreateResponse(HttpStatusCode.Created, topicReview);
+            }
+
+
+
+            return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+        }
+
     }
 }
